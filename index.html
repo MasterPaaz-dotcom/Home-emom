@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HOME EMOM – One minute. One move.</title>
+<meta name="description" content="Free beginner home workouts. No equipment. Every minute on the minute.">
+<meta name="theme-color" content="#10120F">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HOME EMOM">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-prog="women">
+<header class="top">
+  <div>
+    <h1 class="brand">HOME EMOM</h1>
+    <p class="tag">ONE MINUTE. ONE MOVE.</p>
+  </div>
+  <div class="top-actions">
+    <button id="langBtn" class="icon-btn" aria-label="Language / Lugha">EN</button>
+    <button id="voiceBtn" class="icon-btn" aria-pressed="true" aria-label="Voice announcements">🗣️</button>
+    <button id="soundBtn" class="icon-btn" aria-pressed="true" aria-label="Sound and vibration on">🔔</button>
+    <button id="acctBtn" class="icon-btn" aria-label="Your account">👤</button>
+    <button id="helpBtn" class="icon-btn" aria-label="How EMOM works">?</button>
+  </div>
+</header>
+
+<main>
+<section id="setup" class="view">
+  <div id="profileCard" class="card prof" hidden>
+    <div class="prof-top"><div><b id="pName"></b><span id="pLevel"></span></div><div class="pts"><b id="pPts">0</b><span>points</span></div></div>
+    <div class="bar" aria-hidden="true"><i id="pBar"></i></div>
+    <div class="muted small" id="pNext"></div>
+    <div class="stats" id="pStats" style="margin-top:12px"></div>
+    <div id="badges" class="badges"></div>
+  </div>
+  <div id="navRow" class="navrow" hidden><button id="lbBtn" class="ghost">🏆 LEADERBOARD</button><button id="hxBtn" class="ghost">📜 MY HISTORY</button><button id="admBtn" class="ghost" hidden>⚙️ ADMIN PANEL</button></div>
+  <div id="todayBanner" class="card banner" hidden></div>
+  <div class="seg prog" role="tablist" aria-label="Programme">
+    <button data-prog="women" class="on">WOMEN</button>
+    <button data-prog="men">MEN</button>
+    <button data-prog="mama">MAMA</button>
+  </div>
+
+  <div id="mamaInfo" class="card mama" hidden>
+    <strong>MAMA: gentle workouts after birth</strong>
+    <p>Low-impact moves to rebuild your core, pelvic floor and strength. Start only when your doctor or midwife says you are ready. Timing differs for everyone: often around 6 weeks after a vaginal birth, and often 8 to 12 weeks or more after a C-section.</p>
+    <p>There are no crunches, sit-ups or planks here. Go slowly. Stop and speak to your doctor if you feel pain, pulling at a C-section scar, heaviness or pressure in your pelvis, leaking, a bulge along your belly, dizziness, or if bleeding increases or returns.</p>
+    <p>These moves strengthen your core. They cannot remove belly fat from one spot. Walking, good food, sleep and time all help too.</p>
+  </div>
+
+  <div id="stageBox">
+    <h2>Level</h2>
+    <div id="stages" class="seg"></div>
+    <p class="muted small" id="stageNote"></p>
+  </div>
+  <div id="equipBox" hidden>
+    <h2>Equipment</h2>
+    <div id="equip" class="seg three eq"></div>
+    <p class="muted small" id="equipNote"></p>
+  </div>
+
+  <h2>Choose a workout</h2>
+  <div id="workouts" class="stack"></div>
+
+  <h2>Choose a length</h2>
+  <div id="durations" class="seg three"></div>
+
+  <h2>Rep level</h2>
+  <div id="levels" class="seg three"></div>
+  <p class="muted small" id="levelNote"></p>
+
+  <div class="card warm">
+    <strong>Warm up first (3–5 min)</strong>
+    <p>March in place, shoulder circles, hip circles and a few easy squats. Stop if you feel sharp pain, dizziness or chest pain.</p>
+    <button id="warmBtn" class="big ghost">START 3-MIN WARM-UP</button>
+  </div>
+
+  <h2>Today's four moves</h2>
+  <p class="muted small hint">Tap a move to see how to do it.</p>
+  <ol id="preview" class="ex-list"></ol>
+
+  <button id="startBtn" class="big primary">START WORKOUT</button>
+
+  <h2>This week</h2>
+  <div id="week" class="week"></div>
+  <p id="weekNote" class="muted"></p>
+
+  <h2>Progress</h2>
+  <div class="stats" id="stats"></div>
+  <div class="card"><div class="muted small">Minutes trained per week</div><div id="chart" class="chart"></div></div>
+
+  <h2>Your workout days</h2>
+  <div id="planDays" class="week"></div>
+  <div class="card remind">
+    <label for="remTime"><b>Reminder time</b></label>
+    <input type="time" id="remTime" value="18:00">
+    <button id="remBtn" class="big primary">SET REMINDER</button>
+    <p class="muted small" id="remNote">Saves a repeating event to your phone calendar for your workout days. Open the file it downloads and tap Save or Add. The reminder then rings even when the app is closed.</p>
+  </div>
+
+  <h2>History</h2>
+  <ul id="history" class="history"></ul>
+
+  <button id="shareBtn" class="big ghost">SHARE WITH A FRIEND</button>
+  <a class="big ghost" href="guide/home-emom-guide.pdf" target="_blank" rel="noopener" download>DOWNLOAD WORKOUT GUIDE</a>
+  <p class="muted small">Your workout history is saved on this phone.</p>
+</section>
+
+<section id="board" class="view" hidden>
+  <h2 class="vt">Leaderboard</h2>
+  <div class="seg three" id="lbPeriod"><button data-p="week" class="on">WEEK</button><button data-p="month">MONTH</button><button data-p="all">ALL TIME</button></div>
+  <div class="seg" id="lbGender" hidden><button data-g="male">MEN</button><button data-g="female">WOMEN</button></div>
+  <ol id="lbList" class="lb"></ol>
+  <div id="lbMe" class="card" hidden></div>
+  <p id="lbMsg" class="muted"></p>
+  <button class="big ghost backBtn">BACK TO HOME</button>
+</section>
+
+<section id="hxView" class="view" hidden>
+  <h2 class="vt">My history</h2>
+  <p id="hxSum" class="muted"></p>
+  <ul id="hxList" class="history"></ul>
+  <p id="hxMsg" class="muted"></p>
+  <button class="big ghost backBtn">BACK TO HOME</button>
+</section>
+
+<section id="admView" class="view" hidden>
+  <h2 class="vt">Admin panel</h2>
+  <div class="stats" id="admStats"></div>
+  <h2>Users</h2>
+  <ul id="admUsers" class="adm"></ul>
+  <h2>Recent workouts</h2>
+  <ul id="admRecent" class="history"></ul>
+  <p id="admMsg" class="muted"></p>
+  <button class="big ghost backBtn">BACK TO HOME</button>
+</section>
+
+<section id="auth" class="view" hidden>
+  <div class="seg" id="authTabs"><button data-mode="signup" class="on">SIGN UP</button><button data-mode="login">LOG IN</button></div>
+  <div class="card field-card">
+    <div id="signupOnly">
+      <label for="auName">Name or nickname</label>
+      <input id="auName" maxlength="20" autocomplete="nickname" placeholder="Juma">
+    </div>
+    <label for="auPhone">WhatsApp number</label>
+    <input id="auPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0712 345 678">
+    <label for="auPin">4-digit PIN</label>
+    <input id="auPin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••">
+    <div id="signupOnly2">
+      <label>I am</label>
+      <div class="seg" id="auGender" style="margin-top:6px"><button data-g="male">MALE</button><button data-g="female">FEMALE</button></div>
+      <label class="check"><input type="checkbox" id="auConsent"> <span>My nickname and points may be shown on the leaderboard to other people of my gender.</span></label>
+    </div>
+    <p id="auMsg" class="err" role="alert"></p>
+    <button id="auGo" class="big primary">CREATE ACCOUNT</button>
+    <p class="muted small">Your number is never saved as a number, only as a secure code. It is used so you can log in again from any phone. Remember your PIN: there is no reset by SMS, but the admin can reset it for you.</p>
+  </div>
+</section>
+
+<section id="session" class="view" hidden>
+  <div class="chips">
+    <span class="chip" id="chipRound"></span>
+    <span class="chip" id="chipMin"></span>
+    <span class="chip" id="chipName"></span>
+  </div>
+  <div class="timer-wrap">
+    <div id="timer" class="timer" role="timer" aria-live="off">60</div>
+    <div class="timer-label">seconds left this minute</div>
+  </div>
+  <div class="now card">
+    <img id="nowImg" class="demo" alt="" width="320" height="200" onerror="this.style.display='none'">
+    <div class="now-name" id="nowName"></div>
+    <div class="now-reps" id="nowReps"></div>
+    <p class="now-tip" id="nowTip"></p>
+    <p class="mama-warn" id="mamaWarn" hidden>Go slowly. Stop if you feel pain, heaviness, leaking or more bleeding.</p>
+    <p class="next" id="nextUp"></p>
+    <p class="muted small">Do the reps now, then rest until the timer hits 0.</p>
+  </div>
+  <div class="bar" aria-hidden="true"><i id="bar"></i></div>
+  <div class="muted small" id="barText"></div>
+  <ol id="liveList" class="ex-list"></ol>
+  <div class="controls">
+    <button id="pauseBtn" class="big primary">PAUSE</button>
+    <button id="resetBtn" class="big ghost">RESET</button>
+  </div>
+</section>
+
+<section id="warmup" class="view" hidden>
+  <div id="wuLive">
+    <div class="chips"><span class="chip" id="wuStep"></span><span class="chip" id="wuTotal"></span></div>
+    <div class="timer-wrap"><div id="wuTimer" class="timer">30</div><div class="timer-label">seconds left on this move</div></div>
+    <div class="now card"><div class="now-name" id="wuName"></div><p class="now-tip" id="wuTip"></p></div>
+    <div class="bar" aria-hidden="true"><i id="wuBar"></i></div>
+    <div class="controls" style="margin-top:18px"><button id="wuSkip" class="big primary">SKIP MOVE</button><button id="wuStop" class="big ghost">STOP</button></div>
+  </div>
+  <div id="wuDone" hidden>
+    <div class="done-mark">✓</div>
+    <h2 class="done-title">WARM-UP DONE</h2>
+    <p class="msg">Your body is ready. Start your workout when you are.</p>
+    <button id="wuStart" class="big primary">START WORKOUT</button>
+    <button id="wuBack" class="big ghost">BACK</button>
+  </div>
+</section>
+
+<section id="done" class="view" hidden>
+  <div class="done-mark">✓</div>
+  <h2 class="done-title">WORKOUT COMPLETED</h2>
+  <div class="card summary">
+    <div><span>Programme</span><b id="dProg"></b></div>
+    <div><span>Workout</span><b id="dWork"></b></div>
+    <div><span>Total time</span><b id="dTime"></b></div>
+  </div>
+  <p id="dPoints" class="pts-msg"></p>
+  <p id="dMsg" class="msg"></p>
+  <button id="homeBtn" class="big primary">BACK TO HOME</button>
+  <button id="againBtn" class="big ghost">START ANOTHER WORKOUT</button>
+  <button id="shareBtn2" class="big ghost">SHARE WITH A FRIEND</button>
+</section>
+</main>
+
+<dialog id="mamaDialog">
+  <h2>Before you start</h2>
+  <p>These workouts are gentle, but your body is still healing. Please confirm:</p>
+  <label class="check"><input type="checkbox" id="mamaCheck"> <span>My doctor or midwife has said it is OK for me to exercise.</span></label>
+  <p class="muted small">After a C-section, wait for your doctor's go-ahead. Stop any move that hurts.</p>
+  <button id="mamaGo" class="big primary" disabled>CONTINUE</button>
+  <button id="mamaCancel" class="big ghost">NOT YET</button>
+</dialog>
+
+<dialog id="safeDialog">
+  <h2>Before you start</h2>
+  <p>Exercise always carries some risk. Please confirm:</p>
+  <label class="check"><input type="checkbox" id="safeCheck"> <span>I am well enough to exercise. I will stop if I feel pain, dizziness or chest pain.</span></label>
+  <p class="muted small">Warm up first. Use bars, rings and weights only if they are stable and safe. Speak to a doctor if you have a medical condition, are pregnant, or are unsure.</p>
+  <button id="safeGo" class="big primary" disabled>CONTINUE</button>
+  <button id="safeCancel" class="big ghost">NOT YET</button>
+</dialog>
+
+<dialog id="acctDialog">
+  <h2>Your account</h2>
+  <label for="acName" class="lbl">Name or nickname</label>
+  <input id="acName" class="plain" maxlength="20">
+  <label class="lbl">I am</label>
+  <div class="seg" id="acGender" style="margin-top:6px"><button data-g="male">MALE</button><button data-g="female">FEMALE</button></div>
+  <p id="acMsg" class="muted small"></p>
+  <button id="acSave" class="big primary">SAVE</button>
+  <button id="acLogout" class="big ghost">LOG OUT</button>
+  <button id="acDelete" class="big ghost">DELETE ACCOUNT</button>
+  <button id="acClose" class="big ghost">CLOSE</button>
+</dialog>
+
+<dialog id="exDialog">
+  <img id="exImg" class="demo" alt="" width="320" height="200" onerror="this.style.display='none'">
+  <h2 id="exName"></h2>
+  <p id="exReps" class="exreps"></p>
+  <p id="exTip" class="muted"></p>
+  <button id="exClose" class="big primary">CLOSE</button>
+</dialog>
+
+<dialog id="onboard">
+  <h2>How EMOM works</h2>
+  <p><b>EMOM = Every Minute On the Minute.</b></p>
+  <ol>
+    <li>Each workout has four exercises.</li>
+    <li>Every minute, one exercise starts. Do the reps right away.</li>
+    <li>Rest for whatever time is left in that minute.</li>
+    <li>Four minutes = one round. Repeat for 3, 4 or 5 rounds.</li>
+  </ol>
+  <p class="muted">New to training? Start with 12 minutes. Add rounds only when your form and recovery feel good.</p>
+  <button id="onboardOk" class="big primary">GOT IT</button>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
