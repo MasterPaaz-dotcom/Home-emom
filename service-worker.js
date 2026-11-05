@@ -1,16 +1,16 @@
 // Bump VERSION whenever you change any file, so phones fetch the update.
-const VERSION = 'home-emom-v11';
+const VERSION = 'home-emom-v12';
 const FILES = ['./','index.html','style.css','app.js','manifest.json',
-  'icons/icon-192.png','icons/icon-512.png','icons/icon-maskable-512.png','icons/apple-touch-icon.png',
-  'guide/home-emom-guide.pdf',
-  'assets/exercises/toe-taps.svg',
-  'assets/exercises/pelvic-tilts.svg',
-  'assets/exercises/heel-slides.svg',
-  'assets/exercises/clamshells.svg',
-  'assets/exercises/chair-squats.svg',
-  'assets/exercises/cat-cow.svg',
-  'assets/exercises/breathing-and-pelvic-floor-lift.svg',
-  'assets/exercises/bird-dogs.svg','assets/exercises/bodyweight-squats.svg','assets/exercises/dead-bugs.svg','assets/exercises/donkey-kicks.svg','assets/exercises/fire-hydrants.svg','assets/exercises/forearm-plank.svg','assets/exercises/glute-bridges.svg','assets/exercises/mountain-climbers.svg','assets/exercises/pike-push-ups.svg','assets/exercises/prone-w-raises.svg','assets/exercises/push-ups.svg','assets/exercises/reverse-lunges.svg','assets/exercises/reverse-snow-angels.svg','assets/exercises/standing-calf-raises.svg','assets/exercises/standing-side-leg-raises.svg','assets/exercises/sumo-squats.svg','assets/exercises/superman-raises.svg','assets/exercises/supported-reverse-lunges.svg','assets/exercises/wall-push-ups.svg'];
+  'icon-192.png','icon-512.png','icon-maskable-512.png','apple-touch-icon.png',
+  'home-emom-guide.pdf',
+  'ex-toe-taps.svg',
+  'ex-pelvic-tilts.svg',
+  'ex-heel-slides.svg',
+  'ex-clamshells.svg',
+  'ex-chair-squats.svg',
+  'ex-cat-cow.svg',
+  'ex-breathing-and-pelvic-floor-lift.svg',
+  'ex-bird-dogs.svg','ex-bodyweight-squats.svg','ex-dead-bugs.svg','ex-donkey-kicks.svg','ex-fire-hydrants.svg','ex-forearm-plank.svg','ex-glute-bridges.svg','ex-mountain-climbers.svg','ex-pike-push-ups.svg','ex-prone-w-raises.svg','ex-push-ups.svg','ex-reverse-lunges.svg','ex-reverse-snow-angels.svg','ex-standing-calf-raises.svg','ex-standing-side-leg-raises.svg','ex-sumo-squats.svg','ex-superman-raises.svg','ex-supported-reverse-lunges.svg','ex-wall-push-ups.svg'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
 });

@@ -61,4 +61,4 @@ BACK TO HOME button on the finish screen, and Swahili/English switch (EN/SW butt
 Leaderboard (week/month/all time, by gender), My history (synced to account), Admin panel (users, reset PIN, delete, recent workouts). Needs the SQL from v10.sql run once in Supabase (functions lb_board, my_history, lb_admin). Service worker VERSION is now home-emom-v10.
 
 ## v11
-Share link now works on any address (needed for GitHub Pages subfolder URLs). Added .nojekyll. Service worker VERSION is now home-emom-v11.
+Share link now works on any address (needed for GitHub Pages subfolder URLs). Added .nojekyll. Service worker VERSION is now home-emom-v12. All files are now flat in one folder (easier to upload from a phone).

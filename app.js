@@ -584,7 +584,7 @@ if (typeof document !== 'undefined') (function () {
     translateDom();
   }
   const slug = n => n.toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, '');
-  const demoSrc = n => 'assets/exercises/' + slug(n) + '.svg';
+  const demoSrc = n => 'ex-' + slug(n) + '.svg';
   function openEx(e) {
     $('exImg').style.display = ''; $('exImg').src = demoSrc(e[0]); $('exImg').alt = 'Animated demo of ' + e[0];
     $('exName').textContent = e[0]; $('exReps').textContent = e[1]; $('exTip').textContent = e[2];
@@ -709,7 +709,7 @@ if (typeof document !== 'undefined') (function () {
     const hm = sel.remTime.split(':').map(Number), now = n.getHours() * 60 + n.getMinutes(), t = hm[0] * 60 + hm[1];
     if (now >= t && now < t + 10) {
       sel.lastRem = key; saveSel(); renderPlan();
-      try { if ('Notification' in window && Notification.permission === 'granted') navigator.serviceWorker.ready.then(r => r.showNotification('HOME EMOM', { body: T("It's workout time. One minute. One move."), icon: 'icons/icon-192.png' })); } catch (e) {}
+      try { if ('Notification' in window && Notification.permission === 'granted') navigator.serviceWorker.ready.then(r => r.showNotification('HOME EMOM', { body: T("It's workout time. One minute. One move."), icon: 'icon-192.png' })); } catch (e) {}
     }
   }
 
