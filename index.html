@@ -39,7 +39,7 @@
     <div class="stats" id="pStats" style="margin-top:12px"></div>
     <div id="badges" class="badges"></div>
   </div>
-  <div id="navRow" class="navrow" hidden><button id="lbBtn" class="ghost">🏆 LEADERBOARD</button><button id="hxBtn" class="ghost">📜 MY HISTORY</button><button id="admBtn" class="ghost" hidden>⚙️ ADMIN PANEL</button></div>
+  <div id="navRow" class="navrow" hidden><button id="lbBtn" class="ghost">🏆 LEADERBOARD</button><button id="hxBtn" class="ghost">📜 MY HISTORY</button><button id="duBtn" class="ghost">⚔️ 1V1</button><button id="admBtn" class="ghost" hidden>⚙️ ADMIN PANEL</button></div>
   <div id="todayBanner" class="card banner" hidden></div>
   <div class="seg prog" role="tablist" aria-label="Programme">
     <button data-prog="women" class="on">WOMEN</button>
@@ -122,6 +122,21 @@
   <button class="big ghost backBtn">BACK TO HOME</button>
 </section>
 
+<section id="duelView" class="view" hidden>
+  <h2 class="vt">1V1</h2>
+  <div id="duMine"></div>
+  <div id="duInv"></div>
+  <div id="duPickBox" hidden>
+    <h2>Choose your opponent</h2>
+    <p class="muted small">Same gender only. Once you both agree, you are locked in until Sunday night.</p>
+    <ul id="duPick" class="lb"></ul>
+  </div>
+  <h2>Ongoing 1v1s</h2>
+  <ul id="duLive" class="lb"></ul>
+  <p id="duMsg" class="muted"></p>
+  <button class="big ghost backBtn">BACK TO HOME</button>
+</section>
+
 <section id="hxView" class="view" hidden>
   <h2 class="vt">My history</h2>
   <p id="hxSum" class="muted"></p>
@@ -133,6 +148,14 @@
 <section id="admView" class="view" hidden>
   <h2 class="vt">Admin panel</h2>
   <div class="stats" id="admStats"></div>
+  <h2>Pair a 1v1</h2>
+  <div class="card">
+    <select id="admDuA" class="plain"></select>
+    <select id="admDuB" class="plain" style="margin-top:8px"></select>
+    <button id="admDuGo" class="big primary">PAIR THEM</button>
+    <p id="admDuMsg" class="muted small"></p>
+  </div>
+  <ul id="admDuList" class="adm" style="margin-top:10px"></ul>
   <h2>Users</h2>
   <ul id="admUsers" class="adm"></ul>
   <h2>Recent workouts</h2>

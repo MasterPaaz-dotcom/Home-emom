@@ -62,3 +62,6 @@ Leaderboard (week/month/all time, by gender), My history (synced to account), Ad
 
 ## v11
 Share link now works on any address (needed for GitHub Pages subfolder URLs). Added .nojekyll. Service worker VERSION is now home-emom-v12. All files are now flat in one folder (easier to upload from a phone).
+
+## v13: 1v1
+Two people of the same gender compete on points from Monday to Sunday. People pick their opponent (they accept or decline), or the admin pairs them in the admin panel. While in a 1v1 neither person can join another until Sunday night. Every ongoing 1v1 and its live points is visible to everyone. Winner: more points, then more workouts, then more minutes, otherwise a tie. A 1v1 that starts midweek counts points from the day it starts; one accepted on Sunday starts Monday. Run v13.sql once in Supabase (SQL Editor). Service worker VERSION is now home-emom-v13.
