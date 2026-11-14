@@ -1,4 +1,5 @@
 'use strict';
+window.EMOM_JS = 'v15';
 /* ---------- Workout data (edit reps here) ---------- */
 const PROGRAMMES = {
   women: { label: 'WOMEN', workouts: [
@@ -324,7 +325,12 @@ const SW = {
 "total workouts": "mazoezi yote",
 "RESET PIN": "WEKA PIN UPYA",
 "DELETE": "FUTA",
-"You": "Wewe"
+"You": "Wewe",
+"Choose your opponent": "Chagua mpinzani wako",
+"Same gender only. Once you both agree, you are locked in until Sunday night.": "Jinsia moja tu. Mkikubaliana, mnafungwa hadi Jumapili usiku.",
+"Ongoing 1v1s": "1v1 zinazoendelea",
+"Pair a 1v1": "Panga 1v1",
+"PAIR THEM": "WAPANGE"
 };
 const REPS_SW = [[' per side', ' kila upande'], [' per leg', ' kila mguu'], [' per arm', ' kila mkono'], [' reps', ' marudio'], [' seconds', ' sekunde'], [' breaths', ' pumzi']];
 const WARM_SW = [['Tembea mahali pamoja', 'Inua magoti na peleka mikono.'], ['Zungusha mabega', 'Mizunguko mikubwa polepole. Badilisha upande katikati.'],
@@ -335,7 +341,7 @@ const WARM_MAMA_SW = [['Tembea taratibu', 'Inua magoti chini kidogo na peleka mi
   ['Squats polepole hadi kiti', 'Shuka kidogo. Toa pumzi unaposimama.'], ['Tembea na pumua', 'Punguza kasi na pumua kwa kina.']];
 const MESSAGES_SW = ['Kuanza ndio sehemu ngumu, nawe umefanya hivyo. Nguvu hujengwa dakika moja baada ya nyingine.', 'Umemaliza. Pumzika vizuri, kunywa maji, na urudi na nguvu zaidi.', 'Kila mazoezi yana maana. Weka rahisi na endelea kujitokeza.'];
 const MAMA_MESSAGES_SW = ['Hongera, mama. Kupona huchukua muda, na kila mazoezi laini yana maana.', 'Umejitokeza kwa ajili yako leo. Pumzika, kunywa maji, na uwe mpole kwa mwili wako.'];
-const DYN_IDS = ['pauseBtn', 'auGo', 'remNote'];
+const DYN_IDS = ['pauseBtn', 'auGo', 'remNote', 'duMine', 'duInv', 'duPick', 'duLive', 'duMsg', 'admDuList', 'admDuMsg', 'admDuA', 'admDuB'];
 
 /* ---------- Browser app ---------- */
 if (typeof document !== 'undefined') (function () {
@@ -437,7 +443,7 @@ if (typeof document !== 'undefined') (function () {
   const pointsText = r => { const t = r.points + r.bonus; return '+' + t + L(' points', ' pointi') + (r.bonus ? L(' (includes +' + r.bonus + ' streak bonus)', ' (pamoja na +' + r.bonus + ' bonasi ya mfululizo)') : '') + (t === 0 ? L('. Daily limit reached: the first 2 workouts each day earn points.', '. Kikomo cha siku kimefikiwa: mazoezi 2 ya kwanza kila siku hupata pointi.') : ''); };
   async function refreshMe() {
     if (!auth.token) return;
-    try { applyProfile(await rpc('me', { p_token: auth.token })); renderSetup(); }
+    try { applyProfile(await rpc('me', { p_token: auth.token })); renderSetup(); duelBadge(); }
     catch (e) { if (e.message === 'bad_session') onBadSession(); }
   }
   async function logout() {
@@ -490,6 +496,7 @@ if (typeof document !== 'undefined') (function () {
       $('admRecent').innerHTML = r.recent.map(x => '<li><b>' + esc(x.name) + '</b><span>' + esc(x.workout) + ' · ' + x.mins + L(' min', ' dak') + ' · ' + nice(x.day) + '</span></li>').join('');
       $('admUsers').querySelectorAll('[data-pin]').forEach(b => b.onclick = () => admPin(b.dataset.pin, b.dataset.n));
       $('admUsers').querySelectorAll('[data-del]').forEach(b => b.onclick = () => admDel(b.dataset.del, b.dataset.n));
+      loadAdmDuels();
     } catch (e) { apiFail(e, $('admMsg')); }
   }
   async function admPin(id, name) {
@@ -508,6 +515,107 @@ if (typeof document !== 'undefined') (function () {
   $('lbPeriod').querySelectorAll('button').forEach(b => b.onclick = () => { lbState.period = b.dataset.p; openBoard(); });
   $('lbGender').querySelectorAll('button').forEach(b => b.onclick = () => { lbState.gender = b.dataset.g; openBoard(); });
   document.querySelectorAll('.backBtn').forEach(b => b.onclick = () => { show('setup'); renderSetup(); refreshMe(); });
+
+
+  /* ----- 1v1 duels (needs v13.sql in Supabase) ----- */
+  const duErr = m => m === 'network' ? T(ERR.network) : ({
+    busy_you: L('You are already in a 1v1 until it ends.', 'Tayari uko kwenye 1v1 hadi iishe.'),
+    busy_them: L('That person is already in a 1v1.', 'Mtu huyo yupo kwenye 1v1 tayari.'),
+    bad_opponent: L('You can only challenge someone of your gender.', 'Unaweza kumpa changamoto mtu wa jinsia yako tu.'),
+    not_found: L('This invite is no longer available.', 'Ombi hili halipo tena.')
+  }[m] || (T('Something went wrong. Try again.') + ' [' + m + ']'));
+  async function duelBadge() {
+    if (!auth.token) return;
+    try { const m = await rpc('duel_mine', { p_token: auth.token }); $('duBtn').textContent = '⚔️ 1V1' + (m.incoming.length ? ' (' + m.incoming.length + ')' : ''); } catch (e) {}
+  }
+  // who is ahead: points, then workouts, then minutes
+  const duLead = d => { const x = [d.a.points, d.a.workouts, d.a.mins], y = [d.b.points, d.b.workouts, d.b.mins]; for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] > y[i] ? 'a' : 'b'; return null; };
+  const duBar = d => '<div class="dbar"><i style="flex:' + Math.max(1, d.a.points) + '"></i><i class="o" style="flex:' + Math.max(1, d.b.points) + '"></i></div>';
+  const duTime = d => d.finished ? '' : d.starts_in ? L('Starts in ' + d.starts_in + ' day(s)', 'Inaanza baada ya siku ' + d.starts_in) : d.days_left + L(' day(s) left. Ends Sunday night.', ' zimebaki. Inaisha Jumapili usiku.');
+  function duPublic(d) {   // card for any 1v1 in the public list
+    const ld = duLead(d), cls = k => ld === k ? ' lead' : '';
+    return '<li class="duel-card' + (d.me ? ' me' : '') + '"><div class="r"><span class="nm' + cls('a') + '">' + esc(d.a.name) + '</span><span class="pt' + cls('a') + '">' + d.a.points + '</span></div>' + duBar(d) +
+      '<div class="r"><span class="nm' + cls('b') + '">' + esc(d.b.name) + '</span><span class="pt' + cls('b') + '">' + d.b.points + '</span></div></li>';
+  }
+  function duMineCard(d) {   // big card for my own 1v1 (active or finished)
+    const me = d.me === 'b' ? d.b : d.a, op = d.me === 'b' ? d.a : d.b, k = d.me, ok = k === 'a' ? 'b' : 'a', ld = duLead(d);
+    let msg = '';
+    if (d.finished) {
+      if (d.winner === 'tie') msg = L('It is a tie!', 'Sare!');
+      else {
+        const won = d.winner === k, dp = Math.abs(me.points - op.points), dw = Math.abs(me.workouts - op.workouts);
+        const how = dp ? dp + L(' points', ' pointi') : dw ? L('more workouts', 'workouts nyingi zaidi') : L('more minutes', 'dakika nyingi zaidi');
+        msg = won ? L('You won by ' + how, 'Umeshinda kwa ' + how) : esc(op.name) + L(' won by ', ' ameshinda kwa ') + how;
+      }
+    } else msg = !ld ? L('You are level.', 'Mko sawa.') : ld === k ? L('You are ahead by ' + (me.points - op.points) + ' points', 'Unaongoza kwa pointi ' + (me.points - op.points)) : esc(op.name) + L(' is ahead by ', ' anaongoza kwa pointi ') + (op.points - me.points);
+    return '<div class="card duel-me"><div class="who">' + (d.finished ? L('1V1 FINISHED', '1V1 IMEISHA') : L('THIS WEEK', 'WIKI HII') + ' · ' + duTime(d)) + (d.by_admin ? ' · ' + L('set by admin', 'imepangwa na admin') : '') + '</div>' +
+      '<div class="r" style="margin-top:10px;align-items:flex-end"><div><span class="who">' + L('YOU', 'WEWE') + '</span><b class="bigpts">' + me.points + '</b></div><div style="text-align:right"><span class="who">' + esc(op.name).toUpperCase() + '</span><b class="bigpts o">' + op.points + '</b></div></div>' +
+      (k === 'a' ? duBar(d) : duBar({ a: d.b, b: d.a })) + '<div class="duel-win">' + msg + '</div>' +
+      '<div class="stat2"><span>Workouts</span><b>' + me.workouts + ' · ' + op.workouts + '</b></div><div class="stat2"><span>' + L('Minutes', 'Dakika') + '</span><b>' + me.mins + ' · ' + op.mins + '</b></div>' +
+      '<p class="muted small" style="margin:8px 0 0">' + L('Tie-break: more workouts, then more minutes.', 'Pointi zikilingana: workouts nyingi, kisha dakika nyingi.') + '</p>' +
+      (d.finished ? '<button class="big primary" data-act="rematch" data-id="' + op.id + '" data-n="' + esc(op.name) + '">' + L('REMATCH NEXT WEEK', 'RUDIANA WIKI IJAYO') + '</button>' : '') + '</div>';
+  }
+  async function openDuel() {
+    if (!auth.token) return;
+    show('duelView');
+    ['duMine', 'duInv', 'duPick', 'duLive'].forEach(i => $(i).innerHTML = ''); $('duPickBox').hidden = true; $('duMsg').textContent = T('Loading...');
+    try {
+      const [m, live] = await Promise.all([rpc('duel_mine', { p_token: auth.token }), rpc('duel_live', { p_token: auth.token })]);
+      const free = !m.busy && !m.outgoing && !isAdmin();
+      const users = free ? await rpc('duel_users', { p_token: auth.token }) : [];
+      $('duMsg').textContent = '';
+      $('duBtn').textContent = '⚔️ 1V1' + (m.incoming.length ? ' (' + m.incoming.length + ')' : '');
+      $('duMine').innerHTML = m.active ? duMineCard(m.active) : (m.last ? duMineCard(m.last) : '') +
+        (m.outgoing ? '<div class="duel-row"><div><b>' + L('Waiting for ', 'Inasubiri jibu la ') + esc(m.outgoing.to_name) + '</b><small>' + L('The invite stays open for 3 days.', 'Ombi linakaa siku 3.') + '</small></div><button class="gh" data-act="cancel" data-id="' + m.outgoing.id + '">' + L('CANCEL', 'FUTA') + '</button></div>' : '');
+      $('duInv').innerHTML = m.busy ? '' : m.incoming.map(i => '<div class="duel-row"><div><b>' + esc(i.from_name) + '</b><small>' + L('challenged you to a 1v1', 'amekupa changamoto ya 1v1') + '</small></div><button data-act="accept" data-id="' + i.id + '" data-n="' + esc(i.from_name) + '">' + L('ACCEPT', 'KUBALI') + '</button><button class="gh" data-act="decline" data-id="' + i.id + '">' + L('NO', 'HAPANA') + '</button></div>').join('');
+      $('duPickBox').hidden = !free;
+      $('duPick').innerHTML = users.length ? users.map(u => '<li class="duel-row"><div><b>' + esc(u.name) + '</b><small>' + (u.busy ? L('In a 1v1 until Sunday', 'Yupo kwenye 1v1 hadi Jumapili') : L('This week: ', 'Wiki hii: ') + u.week_points + L(' pts', ' pointi')) + '</small></div><button data-act="challenge" data-id="' + u.id + '" data-n="' + esc(u.name) + '"' + (u.busy ? ' disabled' : '') + '>' + L('CHALLENGE', 'SHINDANA') + '</button></li>').join('') : '<li class="muted small">' + L('No one to challenge yet.', 'Hakuna wa kushindana naye bado.') + '</li>';
+      $('duLive').innerHTML = live.length ? live.map(duPublic).join('') : '<li class="muted small">' + L('No 1v1 is running right now.', 'Hakuna 1v1 inayoendelea sasa.') + '</li>';
+    } catch (e) { $('duMsg').textContent = duErr(e.message); if (e.message === 'bad_session') onBadSession(); }
+  }
+  async function duAct(act, id, name) {
+    try {
+      if (act === 'challenge' || act === 'rematch') {
+        if (!confirm(L('Challenge ' + name + '? If they accept, you are both locked in until Sunday night.', 'Mpe ' + name + ' changamoto? Akikubali, mnafungwa hadi Jumapili usiku.'))) return;
+        await rpc('duel_challenge', { p_token: auth.token, p_opp: id });
+      } else if (act === 'accept') {
+        if (!confirm(L('Accept the 1v1 with ' + name + '? You are both locked in until Sunday night.', 'Kubali 1v1 na ' + name + '? Mnafungwa hadi Jumapili usiku.'))) return;
+        await rpc('duel_respond', { p_token: auth.token, p_duel: +id, p_accept: true });
+      } else if (act === 'decline') await rpc('duel_respond', { p_token: auth.token, p_duel: +id, p_accept: false });
+      else if (act === 'cancel') await rpc('duel_cancel', { p_token: auth.token, p_duel: +id });
+      openDuel();
+    } catch (e) { alert(duErr(e.message)); if (e.message === 'bad_session') onBadSession(); else openDuel(); }
+  }
+  $('duelView').onclick = ev => { const b = ev.target.closest('[data-act]'); if (b && !b.disabled) duAct(b.dataset.act, b.dataset.id, b.dataset.n); };
+  $('duBtn').onclick = openDuel;
+
+  /* admin: pair two people into a 1v1 */
+  let admDuUsers = [];
+  function fillAdmB() {
+    const a = admDuUsers.find(u => u.id === $('admDuA').value);
+    $('admDuB').innerHTML = admDuUsers.filter(u => a && u.id !== a.id && u.gender === a.gender).map(u => '<option value="' + u.id + '"' + (u.busy ? ' disabled' : '') + '>' + esc(u.name) + (u.busy ? ' (1v1)' : '') + '</option>').join('');
+  }
+  async function loadAdmDuels() {
+    try {
+      const [users, live] = await Promise.all([rpc('duel_users', { p_token: auth.token }), rpc('duel_live', { p_token: auth.token })]);
+      admDuUsers = users;
+      $('admDuA').innerHTML = users.map(u => '<option value="' + u.id + '"' + (u.busy ? ' disabled' : '') + '>' + esc(u.name) + ' ' + (u.gender === 'male' ? '♂' : '♀') + (u.busy ? ' (1v1)' : '') + '</option>').join('');
+      const first = users.find(u => !u.busy); if (first) $('admDuA').value = first.id;
+      fillAdmB();
+      $('admDuList').innerHTML = live.map(d => '<li class="adm-row"><div><b>' + esc(d.a.name) + ' vs ' + esc(d.b.name) + '</b><small>' + d.a.points + ' · ' + d.b.points + ' · ' + duTime(d) + '</small></div><div class="adm-btns"><button data-dc="' + d.id + '">' + L('CANCEL 1V1', 'FUTA 1V1') + '</button></div></li>').join('');
+      $('admDuList').querySelectorAll('[data-dc]').forEach(b => b.onclick = async () => {
+        if (!confirm(L('Cancel this 1v1?', 'Futa 1v1 hii?'))) return;
+        try { await rpc('admin_duel_cancel', { p_token: auth.token, p_duel: +b.dataset.dc }); loadAdmDuels(); } catch (e) { alert(duErr(e.message)); }
+      });
+    } catch (e) { $('admDuMsg').textContent = duErr(e.message); }
+  }
+  $('admDuA').onchange = fillAdmB;
+  $('admDuGo').onclick = async () => {
+    const x = $('admDuA').value, y = $('admDuB').value;
+    if (!x || !y) { $('admDuMsg').textContent = L('Pick two people of the same gender.', 'Chagua watu wawili wa jinsia moja.'); return; }
+    try { await rpc('admin_duel_pair', { p_token: auth.token, p_a: x, p_b: y }); $('admDuMsg').textContent = L('Paired. Their 1v1 runs until Sunday night.', 'Wamepangwa. 1v1 yao inaisha Jumapili usiku.'); loadAdmDuels(); }
+    catch (e) { $('admDuMsg').textContent = duErr(e.message); }
+  };
 
   const session = { status: 'idle', acc: 0, startedAt: 0, rounds: 3, ticker: null, lastMinute: -1, prog: null, work: null, wakeLock: null, fired: {} };
   function adj(txt) {   // easier = about 30% fewer, harder = about 30% more
@@ -739,7 +847,7 @@ if (typeof document !== 'undefined') (function () {
 
   /* ----- timer ----- */
   const elapsed = () => session.acc + (session.status === 'running' ? Date.now() - session.startedAt : 0);
-  function show(id) { ['setup', 'session', 'done', 'warmup', 'auth', 'board', 'hxView', 'admView'].forEach(v => $(v).hidden = v !== id); window.scrollTo(0, 0); }
+  function show(id) { ['setup', 'session', 'done', 'warmup', 'auth', 'board', 'hxView', 'admView', 'duelView'].forEach(v => $(v).hidden = v !== id); window.scrollTo(0, 0); }
 
   function start() {
     if (session.status !== 'idle' || warm.status === 'running') return;   // guard: never start twice
@@ -951,4 +1059,7 @@ if (typeof document !== 'undefined') (function () {
   if (!auth.token) { show('auth'); renderAuth(); } else { refreshMe(); flushQueue(); }
   if (!store.get('emom_seen', false)) $('onboard').showModal();
   if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js').catch(() => {}));
+  // when a new version takes over, reload once (only if no workout is running)
+  if ('serviceWorker' in navigator) { let had = !!navigator.serviceWorker.controller, did = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (!had) { had = true; return; } if (!did && session.status === 'idle' && warm.status === 'idle') { did = true; location.reload(); } }); }
 })();
