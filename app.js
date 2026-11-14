@@ -1,5 +1,5 @@
 'use strict';
-window.EMOM_JS = 'v15';
+window.EMOM_JS = 'v16';
 /* ---------- Workout data (edit reps here) ---------- */
 const PROGRAMMES = {
   women: { label: 'WOMEN', workouts: [
@@ -137,6 +137,56 @@ function resolveAdvanced(prog, equip) {
     ex: w.slots.map(sl => { const o = sl.find(x => !x[0] || own.has(x[0])); return [o[1], o[2], o[3]]; }) }));
 }
 const DURATIONS = [12, 16, 20];
+
+/* ---------- Exercise library for "Build your own" (edit here) ---------- */
+const EXCAT = [['push', 'PUSH', 'PUSH'], ['pull', 'PULL', 'PULL'], ['core', 'CORE', 'TUMBO'], ['legs', 'LEGS', 'MIGUU'], ['wt', 'WEIGHTS', 'UZITO']];
+// [name, category, standard reps, needs ('' none, 'bar' pull-up bar, 'wt' kettlebell or dumbbell), how to do it]
+const EXLIB = [
+  ['Push-ups', 'push', '10 reps', '', 'Hands under your shoulders, body in one straight line from head to heels. Lower your chest to just above the floor, then press back up. Knees down is fine if you cannot keep the line.'],
+  ['Wide push-ups', 'push', '8 reps', '', 'Like a push-up, but with your hands a little wider than your shoulders. This works your chest more. Keep your body straight and lower slowly.'],
+  ['Pike push-ups', 'push', '6 reps', '', 'Hips high like an upside-down V, hands and feet on the floor. Bend your elbows to lower the top of your head toward the floor, then press back up. This trains your shoulders.'],
+  ['Diamond push-ups', 'push', '6 reps', '', 'Put your hands together under your chest, with thumbs and index fingers touching to make a diamond. Keep your elbows close to your ribs as you lower and press. This works your triceps.'],
+  ['Pseudo planche push-ups', 'push', '5 reps', '', 'Turn your fingers to point back or out, with your hands near your hips. Lean your shoulders forward past your hands, then bend your elbows close to your body and press up. Hard on wrists and shoulders, so lean only as far as is comfortable.'],
+  ['Mike Tyson push-ups', 'push', '5 reps', '', 'Get in push-up position with the backs of your feet against a wall. Lower your chest like a normal push-up. As you press up, rock your hips back toward your heels, then slide forward to the start. One flowing move, so go slowly at first.'],
+  ['Archer push-ups', 'push', '4 per side', '', 'Hands wide apart. Lower your body toward one hand while the other arm stays straight out to the side, then press back up and switch sides. A step toward one-arm push-ups.'],
+  ['Pull-ups', 'pull', '6 reps', 'bar', 'Overhand grip, hands about shoulder-width apart. Start hanging with straight arms, pull until your chin passes the bar, then lower slowly.'],
+  ['Close-grip pull-ups', 'pull', '5 reps', 'bar', 'Overhand grip with your hands close together, about a fist apart. Pull your chin over the bar. This works your arms and the middle of your back more.'],
+  ['Wide-grip pull-ups', 'pull', '5 reps', 'bar', 'Overhand grip with your hands wider than your shoulders. Pull your chest toward the bar. This works your sides and upper back more.'],
+  ['Chin-ups', 'pull', '6 reps', 'bar', 'Underhand grip (palms face you), hands shoulder-width apart. Pull your chin over the bar and lower slowly. This uses your biceps more, so it is often easier than a pull-up.'],
+  ['Close-grip chin-ups', 'pull', '5 reps', 'bar', 'Underhand grip with your hands close together. Pull your chin over the bar and lower slowly. Strong work for your biceps.'],
+  ['Wide-grip chin-ups', 'pull', '4 reps', 'bar', 'Underhand grip with your hands a bit wider than your shoulders. Pull up with your chest leading. A hard one, so stop before your form breaks.'],
+  ['L-sit pull-ups', 'pull', '4 reps', 'bar', 'Do a pull-up while holding your legs straight out in front of you, like the letter L. Squeeze your thighs and abs the whole time. Bend your knees if it is too hard.'],
+  ['Australian rows', 'pull', '10 reps', 'bar', 'Lie under a low bar, rings or a very sturdy table and hold on with an overhand grip, hands shoulder-width apart. Keep your body straight and pull your chest to the bar, then lower. Feet closer to the bar makes it easier.'],
+  ['Close-grip Australian rows', 'pull', '8 reps', 'bar', 'An Australian row with your hands close together. Keep your elbows near your body as you pull your chest to the bar.'],
+  ['Wide-grip Australian rows', 'pull', '8 reps', 'bar', 'An Australian row with your hands wider than your shoulders. Pull your chest to the bar and squeeze your shoulder blades together.'],
+  ['Underhand Australian rows', 'pull', '10 reps', 'bar', 'An Australian row with an underhand grip (palms face you), like a chin-up on its side. This uses your biceps more.'],
+  ['Hanging leg raises (HLR)', 'core', '6 reps', 'bar', 'Hang from a bar with straight arms. Keep your legs together and lift them in front of you to hip height or higher, then lower slowly without swinging. Bend your knees if it is too hard.'],
+  ['Sit-ups', 'core', '12 reps', '', 'Lie on your back with your knees bent and feet flat. Curl all the way up until you are sitting, then lower slowly. Cross your arms on your chest and do not pull on your neck.'],
+  ['Crunches', 'core', '15 reps', '', 'Lie on your back with your knees bent. Squeeze your abs to curl your head and shoulders off the floor, then lower. Your lower back stays on the floor. A small, controlled move.'],
+  ['Bicycle crunches', 'core', '10 per side', '', 'Lie on your back with your hands lightly behind your head. Bring one elbow toward the opposite knee while the other leg stretches out, then switch, like pedalling. Slow and controlled.'],
+  ['Hollow body hold', 'core', '20 seconds', '', 'Lie on your back and press your lower back into the floor. Lift your shoulders and straight legs a little off the floor with your arms by your ears, and hold. If your back lifts off the floor, bend your knees.'],
+  ['Bodyweight squats', 'legs', '15 reps', '', 'Feet shoulder-width apart. Sit your hips back and down with your chest up and knees over your toes, then stand tall.'],
+  ['Jumping squats', 'legs', '10 reps', '', 'Do a squat, then jump up and land softly with bent knees, going straight into the next squat.'],
+  ['Sumo squats', 'legs', '15 reps', '', 'Feet wide, toes turned out. Squat down with your chest up and knees pushing out, then stand.'],
+  ['Sissy squats', 'legs', '6 reps', '', 'Hold a wall or post. Rise on your toes, lean back and let your knees slide forward as you lower, keeping a straight line from knees to shoulders. Go only as low as feels comfortable for your knees.'],
+  ['Archer squats', 'legs', '5 per side', '', 'Stand with a very wide stance. Shift your weight over one leg and squat on it while the other leg stays straight out to the side. Stand and switch sides.'],
+  ['Pistol squats', 'legs', '3 per leg', '', 'Stand on one leg with the other leg straight out in front. Sit down on the standing leg as low as you can, then stand. Very hard, so try the assisted version first.'],
+  ['Assisted pistol squats', 'legs', '5 per leg', '', 'A pistol squat with help: hold a door frame, pole or rings with your hands, or sit down onto a chair and stand back up. Use only as much help as you need.'],
+  ['Lunges', 'legs', '10 per leg', '', 'Step forward and lower until both knees are bent about 90 degrees, then push back to standing and switch legs. Keep your chest up.'],
+  ['Bulgarian split squats', 'legs', '8 per leg', '', 'Put your back foot on a chair or bench behind you. Lower your back knee toward the floor with most of your weight on the front leg, then stand. Do all reps on one leg, then switch.'],
+  ['Kettlebell swings', 'wt', '15 reps', 'wt', 'Hold a kettlebell with both hands. Push your hips back and let the bell swing between your legs, then snap your hips forward so the bell floats to chest height. The power comes from your hips, not your arms.'],
+  ['Single-arm kettlebell swings', 'wt', '10 per arm', 'wt', 'A kettlebell swing with one hand. Keep your shoulders square and your free arm out for balance. Swap hands after the reps.'],
+  ['Goblet squats', 'wt', '10 reps', 'wt', 'Hold a kettlebell or dumbbell against your chest. Squat down with your chest up and elbows inside your knees, then stand.'],
+  ['Kettlebell clean and press', 'wt', '5 per arm', 'wt', 'Swing the bell up so it rests at your shoulder (the clean), then press it straight overhead and lower it back to your shoulder and down. Keep your wrist straight.'],
+  ['Dumbbell thrusters', 'wt', '8 reps', 'wt', 'Hold dumbbells at your shoulders. Squat down, then stand up fast and use that drive to press the dumbbells overhead. Lower them to your shoulders and repeat.'],
+  ['Renegade rows', 'wt', '6 per arm', 'wt', 'Plank position with your hands on two dumbbells and your feet wide. Pull one dumbbell to your hip while keeping your hips still, lower it, then switch arms.'],
+  ['Dumbbell push press', 'wt', '8 reps', 'wt', 'Hold dumbbells at your shoulders. Bend your knees slightly, drive up with your legs and press the dumbbells overhead. Lower back to your shoulders.'],
+  ['Single-arm dumbbell rows', 'wt', '10 per arm', 'wt', 'One hand and one knee on a bench or chair, back flat. Pull the dumbbell toward your hip, squeeze, and lower. Finish one side, then switch.'],
+  ['Dumbbell Romanian deadlifts', 'wt', '12 reps', 'wt', 'Hold dumbbells in front of your thighs. With soft knees, push your hips back and slide the weights down your legs with a flat back, then stand tall.'],
+  ['Goblet reverse lunges', 'wt', '8 per leg', 'wt', 'Hold a weight at your chest. Step one leg back and lower, then push through your front foot to return. Switch legs.']
+];
+const exByName = n => EXLIB.find(e => e[0] === n);
+
 const MAMA_MESSAGES = [
   'Well done, mama. Healing takes time, and every gentle session counts.',
   'You showed up for yourself today. Rest, drink water, and be kind to your body.'
@@ -341,7 +391,7 @@ const WARM_MAMA_SW = [['Tembea taratibu', 'Inua magoti chini kidogo na peleka mi
   ['Squats polepole hadi kiti', 'Shuka kidogo. Toa pumzi unaposimama.'], ['Tembea na pumua', 'Punguza kasi na pumua kwa kina.']];
 const MESSAGES_SW = ['Kuanza ndio sehemu ngumu, nawe umefanya hivyo. Nguvu hujengwa dakika moja baada ya nyingine.', 'Umemaliza. Pumzika vizuri, kunywa maji, na urudi na nguvu zaidi.', 'Kila mazoezi yana maana. Weka rahisi na endelea kujitokeza.'];
 const MAMA_MESSAGES_SW = ['Hongera, mama. Kupona huchukua muda, na kila mazoezi laini yana maana.', 'Umejitokeza kwa ajili yako leo. Pumzika, kunywa maji, na uwe mpole kwa mwili wako.'];
-const DYN_IDS = ['pauseBtn', 'auGo', 'remNote', 'duMine', 'duInv', 'duPick', 'duLive', 'duMsg', 'admDuList', 'admDuMsg', 'admDuA', 'admDuB'];
+const DYN_IDS = ['pauseBtn', 'auGo', 'remNote', 'buildDialog', 'duMine', 'duInv', 'duPick', 'duLive', 'duMsg', 'admDuList', 'admDuMsg', 'admDuA', 'admDuB'];
 
 /* ---------- Browser app ---------- */
 if (typeof document !== 'undefined') (function () {
@@ -355,7 +405,12 @@ if (typeof document !== 'undefined') (function () {
   if (!Array.isArray(sel.days)) sel.days = [];
   if (!Array.isArray(sel.equip)) sel.equip = [];
   if (!['beginner', 'advanced'].includes(sel.stage)) sel.stage = 'beginner';
-  const list = () => (sel.prog !== 'mama' && sel.stage === 'advanced') ? resolveAdvanced(sel.prog, sel.equip) : PROGRAMMES[sel.prog].workouts;
+  // custom ("Build your own") workouts are saved on this phone, up to 5 per programme
+  const customs = () => ((store.get('emom_custom', {}) || {})[sel.prog]) || [];
+  const saveCustoms = arr => { const all = store.get('emom_custom', {}) || {}; all[sel.prog] = arr; store.set('emom_custom', all); };
+  const toWorkout = c => { const ex = c.picks.map(exByName).filter(Boolean).map(e => [e[0], e[2], e[4]]);
+    return { id: c.id, name: c.name, desc: ex.length + (ex.length === 1 ? ' move' : ' moves') + ' · 20 min', custom: true, ex: ex }; };
+  const list = () => (sel.prog !== 'mama' && sel.stage === 'advanced') ? resolveAdvanced(sel.prog, sel.equip).concat(customs().map(toWorkout).filter(w => w.ex.length)) : PROGRAMMES[sel.prog].workouts;
   if (!['easy', 'normal', 'hard'].includes(sel.level)) sel.level = 'normal';
   if (!PROGRAMMES[sel.prog] || !DURATIONS.includes(sel.mins) || !list()[sel.work]) { sel.prog = 'women'; sel.work = 0; sel.mins = 12; }
   const saveSel = () => store.set('emom_sel', sel);
@@ -561,8 +616,8 @@ if (typeof document !== 'undefined') (function () {
     ['duMine', 'duInv', 'duPick', 'duLive'].forEach(i => $(i).innerHTML = ''); $('duPickBox').hidden = true; $('duMsg').textContent = T('Loading...');
     try {
       const [m, live] = await Promise.all([rpc('duel_mine', { p_token: auth.token }), rpc('duel_live', { p_token: auth.token })]);
-      const free = !m.busy && !m.outgoing && !isAdmin();
-      const users = free ? await rpc('duel_users', { p_token: auth.token }) : [];
+      const free = !m.busy && !m.outgoing;
+      const users = free ? await rpc('duel_users', { p_token: auth.token, p_pick: true }) : [];
       $('duMsg').textContent = '';
       $('duBtn').textContent = '⚔️ 1V1' + (m.incoming.length ? ' (' + m.incoming.length + ')' : '');
       $('duMine').innerHTML = m.active ? duMineCard(m.active) : (m.last ? duMineCard(m.last) : '') +
@@ -617,6 +672,63 @@ if (typeof document !== 'undefined') (function () {
     catch (e) { $('admDuMsg').textContent = duErr(e.message); }
   };
 
+
+  /* ----- Build your own (Advanced): up to 4 moves, repeated to fill 20 minutes ----- */
+  let build = { editId: null, name: '', picks: [], cat: 'push', open: '' };
+  const catName = c => { const x = EXCAT.find(k => k[0] === c); return sel.lang === 'sw' ? x[2] : x[1]; };
+  function openBuilder(id) {
+    const c = id ? customs().find(x => x.id === id) : null;
+    build = { editId: c ? c.id : null, name: c ? c.name : '', picks: c ? c.picks.slice() : [], cat: 'push', open: '' };
+    renderBuilder(); $('buildDialog').showModal();
+  }
+  function renderBuilder() {
+    const b = build, n = b.picks.length, h = [];
+    h.push('<h2>' + L('Build your workout', 'Tengeneza mazoezi yako') + '</h2>');
+    h.push('<label class="lbl" for="buName">' + L('Name (optional)', 'Jina (si lazima)') + '</label><input id="buName" class="plain" maxlength="20" value="' + esc(b.name) + '" placeholder="' + L('My workout', 'Mazoezi yangu') + '">');
+    h.push('<p class="lbl">' + L('Your moves (' + n + ' of 4)', 'Mazoezi yako (' + n + ' kati ya 4)') + '</p>');
+    h.push(n ? '<ol class="bu-sel">' + b.picks.map((p, i) => { const e = exByName(p); return '<li><b>' + esc(e[0]) + '</b><span>' + esc(trReps(e[2])) + '</span><button data-bu="rm" data-i="' + i + '" aria-label="Remove">✕</button></li>'; }).join('') + '</ol>' +
+      '<p class="muted small">' + (n === 1 ? L('The same move every minute for 20 minutes.', 'Zoezi lilelile kila dakika kwa dakika 20.') : L('Your ' + n + ' moves repeat in order, one per minute, for 20 minutes.', 'Mazoezi yako ' + n + ' yanajirudia kwa mpangilio, moja kila dakika, kwa dakika 20.')) + '</p>'
+      : '<p class="muted small">' + L('Pick 1 to 4 moves from the list below.', 'Chagua mazoezi 1 hadi 4 kutoka orodha hapa chini.') + '</p>');
+    h.push('<div class="seg five" id="buCats">' + EXCAT.map(c => '<button data-bu="cat" data-c="' + c[0] + '" class="' + (c[0] === b.cat ? 'on' : '') + '">' + catName(c[0]) + '</button>').join('') + '</div>');
+    EXLIB.filter(e => e[1] === b.cat).forEach(e => {
+      const added = b.picks.includes(e[0]), full = n >= 4;
+      const tag = e[3] === 'bar' ? L('needs a bar', 'inahitaji bar') : e[3] === 'wt' ? L('needs a weight', 'inahitaji uzito') : L('no equipment', 'bila vifaa');
+      h.push('<div class="bu-row"><div><b>' + esc(e[0]) + '</b><small>' + esc(trReps(e[2])) + ' · ' + tag + '</small></div>' +
+        '<button class="bu-i" data-bu="info" data-n="' + esc(e[0]) + '" aria-label="How to">?</button>' +
+        '<button class="bu-add" data-bu="add" data-n="' + esc(e[0]) + '"' + (added || full ? ' disabled' : '') + '>' + (added ? L('ADDED', 'IMEONGEZWA') : L('ADD', 'ONGEZA')) + '</button></div>');
+      if (b.open === e[0]) h.push('<p class="bu-how">' + esc(e[4]) + '</p>');
+    });
+    h.push('<button class="big primary" data-bu="save"' + (n ? '' : ' disabled') + '>' + L('SAVE AND USE', 'HIFADHI NA TUMIA') + '</button>');
+    h.push('<button class="big ghost" data-bu="cancel">' + L('CANCEL', 'GHAIRI') + '</button>');
+    const d = $('buildDialog'), top = d.scrollTop; d.innerHTML = h.join(''); d.scrollTop = top;
+  }
+  function saveBuild() {
+    const b = build; if (!b.picks.length) return;
+    const nm = (b.name || '').replace(/[<>&"'`]/g, '').trim().slice(0, 20) || L('My workout', 'Mazoezi yangu');
+    let arr = customs(), id = b.editId;
+    if (id) arr = arr.map(x => x.id === id ? { id: id, name: nm, picks: b.picks } : x);
+    else { const used = new Set(arr.map(x => x.id)); let k = 1; while (used.has('C' + k)) k++; id = 'C' + k; arr = arr.concat([{ id: id, name: nm, picks: b.picks }]); }
+    saveCustoms(arr); sel.work = Math.max(0, list().findIndex(w => w.id === id)); sel.mins = 20; saveSel();
+    $('buildDialog').close(); renderSetup();
+  }
+  $('buildDialog').oninput = ev => { if (ev.target.id === 'buName') build.name = ev.target.value; };
+  $('buildDialog').onclick = ev => {
+    const t = ev.target.closest('[data-bu]'); if (!t || t.disabled) return;
+    const k = t.dataset.bu;
+    if (k === 'cat') { build.cat = t.dataset.c; build.open = ''; renderBuilder(); }
+    else if (k === 'info') { build.open = build.open === t.dataset.n ? '' : t.dataset.n; renderBuilder(); }
+    else if (k === 'add') { if (build.picks.length < 4 && !build.picks.includes(t.dataset.n)) build.picks.push(t.dataset.n); renderBuilder(); }
+    else if (k === 'rm') { build.picks.splice(+t.dataset.i, 1); renderBuilder(); }
+    else if (k === 'save') saveBuild();
+    else if (k === 'cancel') $('buildDialog').close();
+  };
+  $('cuEdit').onclick = () => { const w = list()[sel.work]; if (w && w.custom) openBuilder(w.id); };
+  $('cuDel').onclick = () => {
+    const w = list()[sel.work]; if (!w || !w.custom) return;
+    if (!confirm(L('Delete "' + w.name + '"?', 'Futa "' + w.name + '"?'))) return;
+    saveCustoms(customs().filter(x => x.id !== w.id)); sel.work = 0; saveSel(); renderSetup();
+  };
+
   const session = { status: 'idle', acc: 0, startedAt: 0, rounds: 3, ticker: null, lastMinute: -1, prog: null, work: null, wakeLock: null, fired: {} };
   function adj(txt) {   // easier = about 30% fewer, harder = about 30% more
     const m = txt.match(/^(\d+)(.*)$/);
@@ -624,7 +736,7 @@ if (typeof document !== 'undefined') (function () {
     const n = +m[1], f = sel.level === 'easy' ? 0.7 : 1.3, sec = /second/.test(m[2]);
     return (sec ? Math.max(10, Math.round(n * f / 5) * 5) : Math.max(3, Math.round(n * f))) + m[2];
   }
-  const durs = () => sel.prog === 'mama' ? [12, 16] : DURATIONS;
+  const durs = () => sel.prog === 'mama' ? [12, 16] : (list()[sel.work] && list()[sel.work].custom) ? [20] : DURATIONS;
   const curWorkout = () => { const w = list()[sel.work]; return Object.assign({}, w, { ex: w.ex.map(e => [e[0], trReps(adj(e[1])), e[2]]) }); };
 
   /* ----- setup screen ----- */
@@ -663,7 +775,15 @@ if (typeof document !== 'undefined') (function () {
       b.onclick = () => { sel.work = i; saveSel(); renderSetup(); };
       $('workouts').appendChild(b);
     });
-    if (!durs().includes(sel.mins)) { sel.mins = 12; saveSel(); }
+    if (adv) {
+      const nb = document.createElement('button'), full = customs().length >= 5;
+      nb.className = 'wk build';
+      nb.innerHTML = '<i class="id">+</i><b>' + L('Build your own', 'Tengeneza yako') + '</b><span>' + (full ? L('You have 5 saved workouts. Delete one to add another.', 'Una mazoezi 5 yaliyohifadhiwa. Futa moja ili kuongeza.') : L('Pick up to 4 moves for a 20-minute EMOM.', 'Chagua hadi mazoezi 4 kwa EMOM ya dakika 20.')) + '</span>';
+      nb.onclick = () => full ? alert(L('You can save up to 5 workouts. Delete one first.', 'Unaweza kuhifadhi mazoezi 5 tu. Futa moja kwanza.')) : openBuilder(null);
+      $('workouts').appendChild(nb);
+    }
+    const curW = list()[sel.work]; $('customRow').hidden = !(curW && curW.custom);
+    if (!durs().includes(sel.mins)) { sel.mins = durs().includes(12) ? 12 : durs()[0]; saveSel(); }
     $('durations').innerHTML = ''; $('durations').classList.toggle('three', durs().length === 3);
     $('mamaInfo').hidden = sel.prog !== 'mama';
     durs().forEach(m => {
@@ -878,7 +998,7 @@ if (typeof document !== 'undefined') (function () {
     if (session.status !== 'running') return;
     const s = calc(elapsed(), session.rounds);
     if (s.finished) return finish();
-    const ex = session.work.ex[s.exIndex], nextEx = session.work.ex[(s.exIndex + 1) % 4];
+    const nEx = session.work.ex.length, ci = s.minuteIndex % nEx, ex = session.work.ex[ci], nextEx = session.work.ex[(ci + 1) % nEx];
     const last = s.minute === session.rounds * 4, f = session.fired;
     if (s.minuteIndex !== session.lastMinute) {
       session.lastMinute = s.minuteIndex; session.fired = {}; notify(false);
@@ -886,7 +1006,7 @@ if (typeof document !== 'undefined') (function () {
       $('nowImg').style.display = ''; $('nowImg').src = demoSrc(ex[0]); $('nowImg').alt = 'Animated demo of ' + ex[0];
       $('nowName').textContent = ex[0]; $('nowReps').textContent = ex[1]; $('nowTip').textContent = ex[2];
       $('nextUp').textContent = last ? T('Last minute. Finish strong.') : L('Next up: ', 'Inayofuata: ') + nextEx[0] + ' · ' + nextEx[1];
-      fillList($('liveList'), session.work, s.exIndex, false);
+      fillList($('liveList'), session.work, ci, false);
       $('chipRound').textContent = L('Round ', 'Raundi ') + s.round + L(' of ', ' kati ya ') + session.rounds;
       $('chipMin').textContent = L('Minute ', 'Dakika ') + s.minute + L(' of ', ' kati ya ') + session.rounds * 4;
       let say = '';
@@ -894,11 +1014,11 @@ if (typeof document !== 'undefined') (function () {
       say += L('Minute ', 'Dakika ') + s.minute + '. ' + (last ? L('Last minute. ', 'Dakika ya mwisho. ') : '') + ex[0] + ', ' + ex[1] + '.';
       speak(say);
     }
-    const L = s.secondsLeft, fr = session.fired;
-    if (L <= 30 && L >= 27 && !fr.half) { fr.half = 1; speak(T('Halfway there.')); }
-    if (L <= 10 && L >= 7 && !fr.ten) { fr.ten = 1; speak(last ? L('10 seconds left. Last minute, finish strong.', 'Sekunde 10 zimebaki. Dakika ya mwisho, maliza kwa nguvu.') : L('10 seconds left. Next up: ', 'Sekunde 10 zimebaki. Inayofuata: ') + nextEx[0] + '.'); }
-    if (L <= 3 && !fr['c' + L]) { fr['c' + L] = 1; if (sel.sound) beep(660, 0.12); }
-    $('timer').textContent = L;
+    const sl = s.secondsLeft, fr = session.fired;
+    if (sl <= 30 && sl >= 27 && !fr.half) { fr.half = 1; speak(T('Halfway there.')); }
+    if (sl <= 10 && sl >= 7 && !fr.ten) { fr.ten = 1; speak(last ? L('10 seconds left. Last minute, finish strong.', 'Sekunde 10 zimebaki. Dakika ya mwisho, maliza kwa nguvu.') : L('10 seconds left. Next up: ', 'Sekunde 10 zimebaki. Inayofuata: ') + nextEx[0] + '.'); }
+    if (sl <= 3 && !fr['c' + sl]) { fr['c' + sl] = 1; if (sel.sound) beep(660, 0.12); }
+    $('timer').textContent = sl;
     $('bar').style.width = (s.progress * 100).toFixed(1) + '%';
     const left = Math.ceil((s.totalMs - elapsed()) / 1000);
     $('barText').textContent = Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0') + L(' left in total', ' zimebaki kwa jumla');

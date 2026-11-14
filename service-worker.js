@@ -1,5 +1,5 @@
 // Bump VERSION whenever you change any file, so phones fetch the update.
-const VERSION = 'home-emom-v15';
+const VERSION = 'home-emom-v16';
 const FILES = ['./','index.html','style.css','app.js','manifest.json',
   'icon-192.png','icon-512.png','icon-maskable-512.png','apple-touch-icon.png',
   'home-emom-guide.pdf',

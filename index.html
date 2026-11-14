@@ -13,7 +13,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="HOME EMOM">
-<link rel="stylesheet" href="style.css?v=15">
+<link rel="stylesheet" href="style.css?v=16">
 </head>
 <body data-prog="women">
 <header class="top">
@@ -67,6 +67,7 @@
 
   <h2>Choose a workout</h2>
   <div id="workouts" class="stack"></div>
+  <div id="customRow" class="two" hidden><button id="cuEdit" class="big ghost">EDIT</button><button id="cuDel" class="big ghost">DELETE</button></div>
 
   <h2>Choose a length</h2>
   <div id="durations" class="seg three"></div>
@@ -278,6 +279,8 @@
   <button id="acClose" class="big ghost">CLOSE</button>
 </dialog>
 
+<dialog id="buildDialog"></dialog>
+
 <dialog id="exDialog">
   <img id="exImg" class="demo" alt="" width="320" height="200" onerror="this.style.display='none'">
   <h2 id="exName"></h2>
@@ -300,7 +303,7 @@
 </dialog>
 
 <p id="verStamp" class="muted small" style="text-align:center;margin:0 0 24px"></p>
-<script src="app.js?v=15"></script>
-<script>document.getElementById("verStamp").textContent="HOME EMOM · page v15 · code "+(window.EMOM_JS||"OLD (app.js not updated)");</script>
+<script src="app.js?v=16"></script>
+<script>document.getElementById("verStamp").textContent="HOME EMOM · page v16 · code "+(window.EMOM_JS||"OLD (app.js not updated)");</script>
 </body>
 </html>

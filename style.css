@@ -165,3 +165,18 @@ select.plain{display:block;width:100%;min-height:52px;border-radius:14px;border:
 .duel-row button.gh{background:transparent;color:var(--text);border:2px solid var(--line)}
 .duel-row button:disabled{opacity:.4}
 #duInv .duel-row,#duMine .duel-row{margin-top:10px}
+
+.wk.build{border:2px dashed var(--line)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}#customRow .big{margin-top:10px;min-height:48px;font-size:15px}
+#buildDialog{max-height:90vh;overflow-y:auto}#buildDialog h2{color:var(--text)}
+.seg.five{grid-template-columns:repeat(5,1fr)}.seg.five button{font-size:11px;min-height:44px;padding:0 2px}
+.bu-sel{list-style:none;margin:8px 0;padding:0;display:grid;gap:6px}
+.bu-sel li{display:flex;align-items:center;gap:8px;background:var(--bg);border-radius:12px;padding:8px 12px;margin:0}
+.bu-sel li b{flex:1;font-size:15px}.bu-sel li span{color:var(--accent);font-size:13px;font-weight:700}
+.bu-sel button{min-height:36px;min-width:36px;border-radius:10px;border:2px solid var(--line);background:transparent;color:var(--text)}
+.bu-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+.bu-row>div{flex:1}.bu-row b{font-size:15px}.bu-row small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.bu-i{min-width:38px;min-height:38px;border-radius:50%;border:2px solid var(--line);background:transparent;color:var(--text);font-weight:800}
+.bu-add{min-height:40px;padding:0 12px;border-radius:12px;border:0;background:var(--accent);color:#10120F;font-weight:900;font-size:12px}
+.bu-add:disabled{opacity:.35}
+.bu-how{margin:0;padding:8px 0 12px;opacity:.9;font-size:14px;line-height:1.45;border-bottom:1px solid var(--line)}
